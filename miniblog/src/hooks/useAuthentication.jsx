@@ -12,7 +12,7 @@ import { useState, useEffect } from 'react';
 export const useAuthentication = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(null);
-
+    let systemErrorMessage;
     const [cancelled, setCancelled] = useState(false);
 
     const auth = getAuth();
@@ -45,10 +45,6 @@ export const useAuthentication = () => {
             return user;
 
         } catch (error) {
-            console.log(error.message);
-            console.log(typeof error.message);
-
-            let systemErrorMessage;
 
             if (error.message.includes("Password")) {
                 systemErrorMessage = "A senha precisa conter pelo menos 6 caracters";
@@ -62,6 +58,30 @@ export const useAuthentication = () => {
         };
     };
 
+    const logout = () => {
+        checkIfIsCanlled();
+        signOut(auth);
+    };
+
+    const login = async (data) => {
+        checkIfIsCanlled(); // memory lik
+        setLoading(true);
+        setError(false);
+
+        try {
+            await signInWithEmailAndPassword(auth, data.email, data.password);
+            setLoading(false);
+        } catch (error) {
+            if (error.message.includes("invalid-login-credentials")) {
+                systemErrorMessage = "Usuario não existe ou a senha esta incorreta";
+            } else {
+                systemErrorMessage = "Ocorreu um erro tente mais tarde";
+            }
+        };
+        setError(systemErrorMessage);
+        setLoading(false);
+    }
+
     useEffect(() => {
         return () => setCancelled(true);
     }, []);
@@ -70,6 +90,8 @@ export const useAuthentication = () => {
         auth,
         createUser,
         error,
-        loading
+        logout,
+        loading,
+        login
     };
 };

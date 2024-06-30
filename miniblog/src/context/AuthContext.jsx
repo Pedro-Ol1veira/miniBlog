@@ -8,4 +8,4 @@ export function AuthProvider({ children, value }) {
 
 export function useAuthValue() {
     return useContext(AuthContext);
-}
+};

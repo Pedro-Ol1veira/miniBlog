@@ -64,7 +64,7 @@ export const useAuthentication = () => {
     };
 
     const login = async (data) => {
-        checkIfIsCanlled(); // memory lik
+        checkIfIsCanlled(); // memory leak
         setLoading(true);
         setError(false);
 
